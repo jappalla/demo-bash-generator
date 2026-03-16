@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="it" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bash Command Generator — testscript.info</title>
+<meta name="description" content="Generatore e cheat sheet interattivo di comandi Bash/Shell: file system, networking, processi, Git, Docker e altro con output copiabile.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Bash Command Generator — testscript.info">
+<meta property="og:description" content="Generatore e cheat sheet interattivo di comandi Bash/Shell con output copiabile.">
+<meta property="og:url" content="https://testscript.info/demo/bash-generator/">
+<meta property="og:image" content="https://testscript.info/img/cover-image_1080.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Bash Command Generator — testscript.info">
+<meta name="twitter:description" content="Generatore e cheat sheet interattivo di comandi Bash/Shell con output copiabile.">
+<meta name="twitter:image" content="https://testscript.info/img/cover-image_1080.jpg">
+<link rel="canonical" href="https://testscript.info/demo/bash-generator/">
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"SoftwareSourceCode","name":"Bash Command Generator","programmingLanguage":"Bash","url":"https://testscript.info/demo/bash-generator/","isPartOf":{"@type":"WebSite","name":"testscript.info","url":"https://testscript.info"}}
+</script>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../shared/social.css">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+<style>
+:root{--bg:#0f172a;--surface:#1e293b;--surface-elevated:#283548;--border:rgba(255,255,255,.08);--text:#e2e8f0;--muted:#94a3b8;--accent:#10b981;--accent-glow:rgba(16,185,129,.2);--prompt:#10b981;--flag:#f59e0b;--string:#3b82f6;--comment:#64748b}
+[data-theme="light"]{--bg:#f8fafc;--surface:#fff;--surface-elevated:#f1f5f9;--border:#e2e8f0;--text:#1e293b;--muted:#64748b;--prompt:#059669;--flag:#d97706;--string:#2563eb;--comment:#94a3b8}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:.75rem 1.5rem;background:var(--surface);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100}
+.brand{text-decoration:none;font-weight:700;font-size:1.1rem;color:var(--text)}.brand span{color:var(--accent)}.brand small{font-weight:400;color:var(--muted);font-size:.85rem}
+.controls{display:flex;gap:.5rem;align-items:center}
+.controls a,.controls button{background:var(--surface-elevated);color:var(--text);border:1px solid var(--border);padding:.4rem .75rem;border-radius:.5rem;cursor:pointer;text-decoration:none;font-size:.85rem;display:flex;align-items:center;gap:.35rem;transition:all .2s}
+.controls a:hover,.controls button:hover{border-color:var(--accent);color:var(--accent)}
+.container{max-width:1200px;margin:0 auto;padding:1.5rem}
+.search-bar{position:relative;margin-bottom:1.5rem}
+.search-bar input{width:100%;background:var(--surface);color:var(--text);border:1px solid var(--border);border-radius:.75rem;padding:.75rem 1rem .75rem 2.75rem;font-size:.95rem;outline:none}
+.search-bar input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-glow)}
+.search-bar i{position:absolute;left:1rem;top:50%;transform:translateY(-50%);color:var(--muted)}
+.categories{display:flex;flex-wrap:wrap;gap:.5rem;margin-bottom:1.5rem}
+.cat-btn{background:var(--surface);border:1px solid var(--border);color:var(--text);padding:.4rem .85rem;border-radius:2rem;font-size:.8rem;cursor:pointer;transition:all .2s}
+.cat-btn:hover{border-color:var(--accent)}
+.cat-btn.active{background:var(--accent-glow);border-color:var(--accent);color:var(--accent)}
+.commands-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(350px,1fr));gap:1rem}
+.cmd-card{background:var(--surface);border:1px solid var(--border);border-radius:.75rem;overflow:hidden;transition:all .2s}
+.cmd-card:hover{border-color:var(--accent);transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,0,0,.15)}
+.cmd-header{display:flex;justify-content:space-between;align-items:center;padding:.75rem 1rem;border-bottom:1px solid var(--border)}
+.cmd-title{font-size:.9rem;font-weight:600}
+.cmd-badge{background:var(--accent-glow);color:var(--accent);padding:.15rem .5rem;border-radius:1rem;font-size:.7rem;font-weight:500}
+.cmd-body{padding:.75rem 1rem}
+.cmd-desc{font-size:.8rem;color:var(--muted);margin-bottom:.5rem;line-height:1.4}
+.cmd-code{background:var(--bg);border:1px solid var(--border);border-radius:.5rem;padding:.5rem .75rem;font-family:'JetBrains Mono',monospace;font-size:.85rem;line-height:1.5;position:relative;overflow-x:auto;white-space:pre}
+.cmd-code .prompt{color:var(--prompt)}
+.cmd-code .flag{color:var(--flag)}
+.cmd-code .str{color:var(--string)}
+.cmd-code .cmt{color:var(--comment);font-style:italic}
+.copy-float{position:absolute;top:.35rem;right:.35rem;background:var(--surface);border:1px solid var(--border);color:var(--muted);padding:.2rem .4rem;border-radius:.25rem;cursor:pointer;font-size:.75rem;opacity:0;transition:opacity .2s}
+.cmd-code:hover .copy-float{opacity:1}
+.copy-float:hover{color:var(--accent);border-color:var(--accent)}
+.cmd-examples{padding:.5rem 1rem .75rem;font-size:.75rem;color:var(--muted)}
+.cmd-examples strong{color:var(--text);font-weight:500}
+.counter{font-size:.85rem;color:var(--muted);margin-bottom:.75rem}
+@media(max-width:768px){.commands-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div><a href="../" class="brand">ts<span>.</span> <small>/ bash</small></a></div>
+  <div class="controls">
+    <button onclick="toggleTheme()"><i class="bi bi-sun-fill" id="themeIcon"></i></button>
+    <a href="../"><i class="bi bi-arrow-left"></i> Demo Hub</a>
+  </div>
+</div>
+
+<div class="container">
+  <h2 style="margin-bottom:.25rem">Bash Command Generator</h2>
+  <p style="color:var(--muted);font-size:.9rem;margin-bottom:1.25rem">Cheat sheet interattivo con 40+ comandi organizzati per categoria</p>
+
+  <div class="search-bar">
+    <i class="bi bi-search"></i>
+    <input type="text" id="searchInput" placeholder="Cerca comandi... (es: find, grep, docker)" oninput="filterCommands()">
+  </div>
+
+  <div class="categories" id="categories"></div>
+  <div class="counter" id="counter"></div>
+  <div class="commands-grid" id="commandsGrid"></div>
+</div>
+
+<div class="social-share" id="socialShare">
+  <a href="#" class="share-fb" onclick="shareOn('facebook')"><i class="bi bi-facebook"></i></a>
+  <a href="#" class="share-x" onclick="shareOn('x')"><i class="bi bi-twitter-x"></i></a>
+  <a href="#" class="share-li" onclick="shareOn('linkedin')"><i class="bi bi-linkedin"></i></a>
+  <a href="#" class="share-wa" onclick="shareOn('whatsapp')"><i class="bi bi-whatsapp"></i></a>
+  <a href="#" class="share-tg" onclick="shareOn('telegram')"><i class="bi bi-telegram"></i></a>
+</div>
+<script src="../shared/social.js"></script>
+<script>
+const commands = [
+  // File System
+  {cat:'filesystem',title:'find — Cerca file',desc:'Cerca file e directory in modo ricorsivo con filtri potenti',code:'<span class="prompt">$</span> find /path <span class="flag">-name</span> <span class="str">"*.log"</span> <span class="flag">-mtime</span> -7 <span class="flag">-size</span> +1M',examples:'Cerca tutti i .log modificati negli ultimi 7 giorni, più grandi di 1MB'},
+  {cat:'filesystem',title:'ls — Lista contenuti',desc:'Mostra file e directory con dettagli e ordinamento',code:'<span class="prompt">$</span> ls <span class="flag">-lahS</span> /path <span class="cmt"># -l long, -a hidden, -h human, -S sort by size</span>',examples:'Ordina per dimensione, mostra file nascosti in formato leggibile'},
+  {cat:'filesystem',title:'du / df — Spazio disco',desc:'Analizza uso dello spazio su disco',code:'<span class="prompt">$</span> du <span class="flag">-sh</span> ./* | sort <span class="flag">-rh</span> | head <span class="flag">-10</span>\n<span class="prompt">$</span> df <span class="flag">-h</span> <span class="cmt"># panoramica partizioni</span>',examples:'Top 10 directory per dimensione + panoramica disco'},
+  {cat:'filesystem',title:'chmod / chown — Permessi',desc:'Modifica permessi e proprietario di file e directory',code:'<span class="prompt">$</span> chmod <span class="flag">-R</span> 755 /var/www <span class="cmt"># rwxr-xr-x</span>\n<span class="prompt">$</span> chown <span class="flag">-R</span> www-data:www-data /var/www',examples:'Imposta permessi web server standard ricorsivamente'},
+  {cat:'filesystem',title:'tar — Archivi',desc:'Crea e estrai archivi compressi',code:'<span class="prompt">$</span> tar <span class="flag">-czf</span> backup.tar.gz ./src <span class="cmt"># crea</span>\n<span class="prompt">$</span> tar <span class="flag">-xzf</span> backup.tar.gz <span class="flag">-C</span> /dest <span class="cmt"># estrai</span>',examples:'-c crea, -x estrai, -z gzip, -f file, -C directory destinazione'},
+  {cat:'filesystem',title:'rsync — Sincronizza file',desc:'Sincronizzazione efficiente di file e directory',code:'<span class="prompt">$</span> rsync <span class="flag">-avz --progress --delete</span> ./src/ user@host:/dest/',examples:'Sincronizza con compressione, mostra progresso, elimina file extra'},
+  // Text Processing
+  {cat:'text',title:'grep — Cerca nel testo',desc:'Cerca pattern nel contenuto dei file',code:'<span class="prompt">$</span> grep <span class="flag">-rn --include=</span><span class="str">"*.php"</span> <span class="str">"function"</span> ./src\n<span class="prompt">$</span> grep <span class="flag">-E</span> <span class="str">"error|warning|fatal"</span> app.log',examples:'-r ricorsivo, -n numeri linea, -E regex esteso, --include filtro file'},
+  {cat:'text',title:'sed — Trova e sostituisci',desc:'Editor di stream per trasformazioni testo',code:'<span class="prompt">$</span> sed <span class="flag">-i</span> <span class="str">\'s/old_text/new_text/g\'</span> file.txt\n<span class="prompt">$</span> sed <span class="flag">-n</span> <span class="str">\'10,20p\'</span> file.txt <span class="cmt"># linee 10-20</span>',examples:'-i modifica in-place, s/ sostituzione, g globale, -n sopprime output'},
+  {cat:'text',title:'awk — Elabora colonne',desc:'Linguaggio di elaborazione testo per dati strutturati a colonne',code:'<span class="prompt">$</span> awk <span class="str">\'{print $1, $3}\'</span> data.txt\n<span class="prompt">$</span> awk <span class="flag">-F,</span> <span class="str">\'$3 > 100 {sum+=$3} END {print sum}\'</span> file.csv',examples:'Estrai colonne, filtra righe, calcola somme da CSV'},
+  {cat:'text',title:'sort / uniq / wc',desc:'Ordina, deduplicaa e conta righe/parole',code:'<span class="prompt">$</span> cat access.log | awk <span class="str">\'{print $1}\'</span> | sort | uniq <span class="flag">-c</span> | sort <span class="flag">-rn</span> | head\n<span class="prompt">$</span> wc <span class="flag">-l</span> *.php <span class="cmt"># conta linee per file</span>',examples:'Top IP da access log + conteggio linee di codice PHP'},
+  // Networking
+  {cat:'network',title:'curl — HTTP requests',desc:'Esegui richieste HTTP da terminale',code:'<span class="prompt">$</span> curl <span class="flag">-s</span> https://api.example.com/data | jq .\n<span class="prompt">$</span> curl <span class="flag">-X POST -H</span> <span class="str">"Content-Type: application/json"</span> \\\n  <span class="flag">-d</span> <span class="str">\'{"key":"value"}\'</span> https://api.example.com',examples:'GET con parsing JSON + POST con body JSON e header personalizzati'},
+  {cat:'network',title:'ss / netstat — Porte',desc:'Mostra connessioni di rete e porte in ascolto',code:'<span class="prompt">$</span> ss <span class="flag">-tulnp</span> <span class="cmt"># porte TCP/UDP in ascolto con PID</span>\n<span class="prompt">$</span> ss <span class="flag">-s</span> <span class="cmt"># statistiche socket</span>',examples:'-t TCP, -u UDP, -l listening, -n numerico, -p processo'},
+  {cat:'network',title:'ssh / scp — Connessione remota',desc:'Connessione SSH sicura e trasferimento file',code:'<span class="prompt">$</span> ssh <span class="flag">-p 65002</span> user@host\n<span class="prompt">$</span> scp <span class="flag">-P 65002</span> ./file.txt user@host:/remote/path/',examples:'Connessione SSH su porta custom + copia file remota'},
+  {cat:'network',title:'wget — Download file',desc:'Scarica file da URL con supporto resume',code:'<span class="prompt">$</span> wget <span class="flag">-c -q --show-progress</span> https://example.com/large-file.zip\n<span class="prompt">$</span> wget <span class="flag">-r -l 2 -nd -A</span> <span class="str">"*.pdf"</span> https://example.com',examples:'-c resume, -r ricorsivo, -l profondità, -A filtro file'},
+  // Process Management
+  {cat:'process',title:'ps / top / htop — Processi',desc:'Monitora processi in esecuzione',code:'<span class="prompt">$</span> ps <span class="flag">aux</span> | grep <span class="str">"node\\|php"</span> | grep <span class="flag">-v</span> grep\n<span class="prompt">$</span> top <span class="flag">-bn1</span> | head <span class="flag">-20</span> <span class="cmt"># snapshot</span>',examples:'Filtra processi Node/PHP + snapshot dei top consumer'},
+  {cat:'process',title:'kill / pkill — Termina processi',desc:'Invia segnali ai processi',code:'<span class="prompt">$</span> kill <span class="flag">-9</span> 12345 <span class="cmt"># uccidi per PID</span>\n<span class="prompt">$</span> pkill <span class="flag">-f</span> <span class="str">"node server"</span> <span class="cmt"># uccidi per nome</span>',examples:'-9 SIGKILL (forzato), -15 SIGTERM (gentile), -f pattern matching'},
+  {cat:'process',title:'systemctl — Servizi',desc:'Gestisci servizi systemd',code:'<span class="prompt">$</span> systemctl status nginx\n<span class="prompt">$</span> systemctl restart php8.2-fpm\n<span class="prompt">$</span> systemctl enable <span class="flag">--now</span> mysql',examples:'status: stato corrente, restart: riavvia, enable --now: abilita e avvia'},
+  {cat:'process',title:'crontab — Scheduler',desc:'Pianifica esecuzione periodica di comandi',code:'<span class="prompt">$</span> crontab <span class="flag">-e</span>\n<span class="cmt"># m h dom mon dow command</span>\n0 2 * * * /usr/bin/php /app/backup.php\n*/5 * * * * curl <span class="flag">-s</span> https://site.com/health',examples:'Backup alle 2:00, health check ogni 5 minuti'},
+  // Git
+  {cat:'git',title:'git log — Cronologia',desc:'Visualizza la history dei commit con formattazione',code:'<span class="prompt">$</span> git log <span class="flag">--oneline --graph --all -20</span>\n<span class="prompt">$</span> git log <span class="flag">--author=</span><span class="str">"Mario"</span> <span class="flag">--since=</span><span class="str">"1 week ago"</span> <span class="flag">--stat</span>',examples:'Grafo ASCII degli ultimi 20 commit + filtro per autore e data'},
+  {cat:'git',title:'git stash — Salva modifiche',desc:'Salva temporaneamente le modifiche non committate',code:'<span class="prompt">$</span> git stash push <span class="flag">-m</span> <span class="str">"work in progress"</span>\n<span class="prompt">$</span> git stash list\n<span class="prompt">$</span> git stash pop <span class="cmt"># ripristina ultimo stash</span>',examples:'Salva con messaggio, elenca, ripristina ultimo stash'},
+  {cat:'git',title:'git rebase — Riscrittura',desc:'Riscrivi la history dei commit per una timeline pulita',code:'<span class="prompt">$</span> git rebase <span class="flag">-i</span> HEAD~5 <span class="cmt"># interattivo ultimi 5</span>\n<span class="prompt">$</span> git rebase main <span class="cmt"># rebase su main</span>',examples:'-i per squash/fixup/reword, rebase su branch per linearizzare'},
+  {cat:'git',title:'git bisect — Debug',desc:'Trova il commit che ha introdotto un bug con ricerca binaria',code:'<span class="prompt">$</span> git bisect start\n<span class="prompt">$</span> git bisect bad <span class="cmt"># il commit attuale ha il bug</span>\n<span class="prompt">$</span> git bisect good abc123 <span class="cmt"># questo commit funzionava</span>',examples:'Git testa automaticamente i commit intermedi per trovare il colpevole'},
+  // Docker
+  {cat:'docker',title:'docker build / run',desc:'Costruisci immagini e avvia container',code:'<span class="prompt">$</span> docker build <span class="flag">-t</span> myapp:latest .\n<span class="prompt">$</span> docker run <span class="flag">-d -p</span> 3000:3000 <span class="flag">--name</span> myapp myapp:latest',examples:'-t tag, -d background, -p port mapping, --name nome container'},
+  {cat:'docker',title:'docker compose — Stack',desc:'Gestisci stack multi-container con Docker Compose',code:'<span class="prompt">$</span> docker compose up <span class="flag">-d --build</span>\n<span class="prompt">$</span> docker compose logs <span class="flag">-f</span> app\n<span class="prompt">$</span> docker compose exec app sh',examples:'up avvia, logs mostra log, exec esegui comando nel container'},
+  {cat:'docker',title:'docker system — Pulizia',desc:'Gestisci risorse Docker e libera spazio',code:'<span class="prompt">$</span> docker system prune <span class="flag">-a --volumes</span>\n<span class="prompt">$</span> docker images | sort <span class="flag">-k7 -h</span> <span class="cmt"># ordina per size</span>',examples:'prune -a rimuove tutto il non utilizzato, --volumes include i volumi'},
+];
+
+let activeCategory = 'all';
+
+function renderCategories() {
+  const cats = ['all', ...new Set(commands.map(c => c.cat))];
+  const labels = {all:'Tutti',filesystem:'File System',text:'Testo',network:'Network',process:'Processi',git:'Git',docker:'Docker'};
+  document.getElementById('categories').innerHTML = cats.map(c =>
+    `<button class="cat-btn ${c === activeCategory ? 'active' : ''}" onclick="selectCategory('${c}')">${labels[c] || c}</button>`
+  ).join('');
+}
+
+function selectCategory(cat) {
+  activeCategory = cat;
+  renderCategories();
+  filterCommands();
+}
+
+function filterCommands() {
+  const search = document.getElementById('searchInput').value.toLowerCase();
+  const filtered = commands.filter(c => {
+    const matchCat = activeCategory === 'all' || c.cat === activeCategory;
+    const matchSearch = !search || c.title.toLowerCase().includes(search) || c.desc.toLowerCase().includes(search) || c.examples.toLowerCase().includes(search);
+    return matchCat && matchSearch;
+  });
+
+  document.getElementById('counter').textContent = `${filtered.length} di ${commands.length} comandi`;
+  document.getElementById('commandsGrid').innerHTML = filtered.map((c, i) => `
+    <div class="cmd-card">
+      <div class="cmd-header">
+        <span class="cmd-title">${c.title}</span>
+        <span class="cmd-badge">${c.cat}</span>
+      </div>
+      <div class="cmd-body">
+        <div class="cmd-desc">${c.desc}</div>
+        <div class="cmd-code"><button class="copy-float" onclick="copyCmd(${i})"><i class="bi bi-clipboard"></i></button>${c.code}</div>
+      </div>
+      <div class="cmd-examples"><strong>Esempio:</strong> ${c.examples}</div>
+    </div>
+  `).join('');
+}
+
+function copyCmd(idx) {
+  const text = commands[idx].code.replace(/<[^>]+>/g, '');
+  navigator.clipboard.writeText(text);
+}
+
+function toggleTheme(){const h=document.documentElement;const n=h.getAttribute('data-theme')==='dark'?'light':'dark';h.setAttribute('data-theme',n);document.getElementById('themeIcon').className=n==='dark'?'bi bi-sun-fill':'bi bi-moon-stars-fill';localStorage.setItem('demo_theme',n);}
+(()=>{const s=localStorage.getItem('demo_theme');if(s){document.documentElement.setAttribute('data-theme',s);document.getElementById('themeIcon').className=s==='dark'?'bi bi-sun-fill':'bi bi-moon-stars-fill';}})();
+
+renderCategories();
+filterCommands();
+</script>
+</body>
+</html>
